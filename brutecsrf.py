@@ -26,7 +26,7 @@ def creds():
     print(colored("GitHub: https://github.com/J3wker\n\n", 'green'))
 
 def parse():
-    parser = argparse.ArgumentParser(description='[+] Usage: ./brutecsrf.py --url http://test.com  --csrf centreon_token --u admin \n | NOTE: If a field dont have a name - set them as "" ')
+    parser = argparse.ArgumentParser(description='[+] Usage: ./brutecsrf.py --url http://test.com  --csrf centreon_token --u admin \n | NOTE: If some field doesnt have a name set it as "" ')
     parser.add_argument('--url', dest="target_url", help='Victim Website')
     parser.add_argument('--csrf', dest="csrf", help=' csrf name in HTTP form')
     parser.add_argument('--u', "--user", dest="username", help=' username you are brute forcing')
