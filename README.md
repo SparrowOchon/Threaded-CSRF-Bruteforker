@@ -16,4 +16,4 @@ If some field dont have a name set them as ""
 
 
 **Credits**  
-Tool was written by J3wker
+Tool was written by J3wker aka "Omri Baso"
