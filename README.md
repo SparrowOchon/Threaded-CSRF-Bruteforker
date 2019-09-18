@@ -12,7 +12,7 @@ Example:
 Actualy Usage:  
 ` python3 brutecsrf.py --url http://test.com/index.php --csrf csrf_token --u admin --fuser usernmae --passwd password `
 
-If some field dont have a name set them as ""
+If some field doesnt have a name set it as ""
 
 
 **Credits**  
