@@ -14,6 +14,10 @@ Actualy Usage:
 
 If some field doesnt have a name set it as ""
 
+**Note**  
+If i will see that people want this kind of a tool
+i will make it more professional and automate everything.
+PM me in HTB so i will know :) 
 
 **Credits**  
 Tool was written by J3wker aka "Omri Baso"
