@@ -82,7 +82,7 @@ def get_wrong(username):
 
     response = requests.post(target_url, data=data, cookies=cookie)
     response = (str(response.content))
-    response = re.sub(f'(?:"{csrf}" type="hidden" value=")(.*)(?:" />)', "omri", response)
+    response = re.sub(f'(?:<.* name="{csrf}" .* value=")(.*)(?:" />)', "omri", response)
 
 
     return response
