@@ -1,9 +1,10 @@
 # CSRFbruteforce
 CSRFbruteforce Tool - Nothing can stop us.
+anti-CSRF tokens brtuce force
 
 **About The Tool**  
 Simple tool for brute forcing logins which are   
-using CSRF tokens to stop you from brute forcing them
+using anti-CSRF tokens to stop you from brute forcing them
 
 **Usage**  
 Example:  
