@@ -59,7 +59,7 @@ def get_data():
    cookie = cookie.group(1)
 
    data = str(data)
-   token = re.search(f'(?:<input name="{csrf}" type="hidden" value=")(.*)(?:" />)', data)
+   token = re.search(f'(?:<.* name="{csrf}" .* value=")(.*)(?:" />)', data)
    csrft = token.group(1)
 
 
