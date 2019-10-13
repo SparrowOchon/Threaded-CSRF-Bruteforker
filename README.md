@@ -1,24 +1,25 @@
 # CSRFbruteforce
-CSRFbruteforce Tool - Nothing can stop us.  
+
+CSRFbruteforce Tool - Nothing can stop us.
 anti-CSRF tokens brtuce force
 
-**About The Tool**  
-Simple tool for brute forcing logins which are   
+**About The Tool**
+Simple tool for brute forcing logins which are
 using anti-CSRF tokens to stop you from brute forcing them
 
-**Usage**  
-Example:  
-` python3 brutecsrf.py --url http://test.com/index.php --csrf name_csrf_token_in_HTML_form --u admin --fuser user_name_in_HTML_form --passwd password_name_in_HTML_form `
+**Usage**
+Example:
+`python3 brutecsrf.py --url http://test.com/index.php --csrf name_csrf_token_in_HTML_form --u admin --fuser user_name_in_HTML_form --passwd password_name_in_HTML_form`
 
-Actualy Usage:  
-` python3 brutecsrf.py --url http://test.com/index.php --csrf csrf_token --u admin --fuser usernmae --passwd password `
+Actualy Usage:
+`python3 brutecsrf.py --url http://test.com/index.php --csrf csrf_token --u admin --fuser username --passwd password`
 
 If some field doesnt have a name set it as ""
 
-**Note**  
+**Note**
 If i will see that people want this kind of a tool
 i will make it more professional and automate everything.
-PM me in HTB so i will know :) 
+PM me in HTB so i will know :)
 
-**Credits**  
+**Credits**
 Tool was written by J3wker aka "Omri Baso"
