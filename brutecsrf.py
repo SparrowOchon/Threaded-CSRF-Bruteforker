@@ -134,25 +134,18 @@ def thread_controller(wordlist, thread_words):
     :param thread_words {Integer}: Word count to send to each thread for execution
     """
     shared_process_queue = Queue()
-    active_process_list = []
-    starting_word = 0
 
     with open(wordlist, "r") as wordlist_line:
         wordlist_sent = islice(
-            wordlist_line, starting_word, thread_words
+            wordlist_line, thread_words
         )  # Avoid reading entire file into memory
         process = Process(
             target=attack, args=(user, wordlist_sent, shared_process_queue)
         )
+        process.daemon = True
         process.start()
-        active_process_list.append(process)
-        starting_word += thread_words
-        if shared_process_queue.get() > 0:
-            word = shared_process_queue.get()
-            print("b[+] Password found: " + colored(word, "green"))
-            for process in active_process_list:
-                process.kill()
-            return
+        if shared_process_queue.qsize() > 0:
+            return shared_process_queue
 
 
 # a bit of a mess but we needed this way instead of making a main function the returns all of that
@@ -182,7 +175,15 @@ if __name__ == "__main__":
             fuser = "username"
 
         creds()
-        thread_controller(wordlist, thread_words)
+        shared_process_queue = thread_controller(wordlist, thread_words)
+        if (
+            shared_process_queue.qsize() > 0
+        ):  # Need to repeat the check since it could end without the queue getting a value
+            word = shared_process_queue.get()
+            print("\nb[+] Password found: " + colored(word, "green"))
+        else:
+            print("\nb[-] Password Not found")
+
     except KeyboardInterrupt:
         print(colored("\n\n[-] Detected Ctrl + C ... Program Existed", "red"))
         sys.exit()
