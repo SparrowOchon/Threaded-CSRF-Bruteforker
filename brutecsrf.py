@@ -128,8 +128,8 @@ def attack(username, wordlist, process_queue):
 
 def thread_controller(wordlist, thread_words):
     """
-    Break the wordlist down into chunks and spawn threads to try each value in the chunk
-    Return list of running processes or
+    Break the wordlist down into chunks and spawn threads to try each value in the chunk.
+    Wait for threads to terminate if no password was found to ensure its not from the file.
 
     :param wordlist {String}: Path to wordlist file we want to use
     :param thread_words {Integer}: Word count to send to each thread for execution
