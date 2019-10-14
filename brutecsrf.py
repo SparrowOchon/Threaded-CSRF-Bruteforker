@@ -129,33 +129,45 @@ def attack(username, wordlist, process_queue):
 def thread_controller(wordlist, thread_words):
     """
     Break the wordlist down into chunks and spawn threads to try each value in the chunk
+    Return list of running processes or
 
     :param wordlist {String}: Path to wordlist file we want to use
     :param thread_words {Integer}: Word count to send to each thread for execution
+    :return found_word {String} Word found as being the password
     """
     shared_process_queue = Queue()
-
+    active_process_list = []
+    found_word = None
+    termination_check = False
     with open(wordlist, "r") as wordlist_line:
         while True:
             # Avoid reading entire file into memory
             wordlist_sent = list(islice(wordlist_line, thread_words))
-            if not wordlist_sent or shared_process_queue.qsize() > 0:
+            if not wordlist_sent:  # File completed / No more words
+                termination_check = True  # Set the break condition to true
+                for process in active_process_list:
+                    process.join()  # Wait for active threads to terminate
+            if shared_process_queue.qsize() > 0:  # Pass found
+                found_word = shared_process_queue.get()
                 break
+            elif termination_check:  # Pass not found but threads finished
+                break
+
             process = Process(
                 target=attack, args=(user, wordlist_sent, shared_process_queue)
             )
-            process.daemon = True
+            process.daemon = True  # Avoid closing processes if found before EOF
             process.start()
-        return shared_process_queue
+            active_process_list.append(process)
+        return found_word
 
 
 # a bit of a mess but we needed this way instead of making a main function the returns all of that
 # we have a lot of data being processed so thats my only way to make the program quick and easy and save lines
 # nevertheless it works fine so we're good happy hackers.
 if __name__ == "__main__":
-    thread_words = (
-        120
-    )  # Note all Vars in this block are global but we still pass params to make it easier to read
+    # Note all Vars in this block are global but we still pass params to make it easier to read
+    thread_words = 120
     try:
         options = parse()
         target_url = options.target_url
@@ -176,10 +188,8 @@ if __name__ == "__main__":
             fuser = "username"
 
         creds()
-        shared_process_queue = thread_controller(wordlist, thread_words)
-        if shared_process_queue.qsize() > 0:
-            # Need to repeat the check since it could end without the queue getting a value
-            word = shared_process_queue.get()
+        word = thread_controller(wordlist, thread_words)
+        if word is not None:  # Check if Value was found
             print("\nb[+] Password found: " + colored(word, "green"))
         else:
             print("\nb[-] Password Not found")
