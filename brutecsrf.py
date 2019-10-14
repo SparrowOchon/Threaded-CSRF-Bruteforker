@@ -139,7 +139,7 @@ def thread_controller(wordlist, thread_words):
         while True:
             # Avoid reading entire file into memory
             wordlist_sent = list(islice(wordlist_line, thread_words))
-            if not wordlist_sent or shared_process_queue > 0:
+            if not wordlist_sent or shared_process_queue.qsize() > 0:
                 break
             process = Process(
                 target=attack, args=(user, wordlist_sent, shared_process_queue)
