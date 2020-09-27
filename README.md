@@ -1,12 +1,9 @@
-# CSRFbruteforce
+# Web-BruteForcer-Token-Support
+Web-BruteForcer-Token-Support
 
-CSRFbruteforce Tool - Nothing can stop us.
-anti-CSRF tokens brtuce force
-
-## About The Tool
-
-Simple tool for brute forcing logins which are
-using anti-CSRF tokens to stop you from brute forcing them
+**About The Tool**  
+Simple tool for brute forcing logins which are   
+using anti-Automation tokens to stop you from brute forcing them
 
 ## Usage
 
